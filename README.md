@@ -1,18 +1,33 @@
-# How Physics and Background Attributes Impact Video Transformers in Robotic Manipulation: A Case Study on Pushing
+# How Physics and Background Attributes Impact Video Transformers in Robotic Manipulation: A Case Study on Pushing (IROS 2024)
 
-This repository is dedicated to our paper titled "How Physics and Background Attributes Impact Video Transformers in Robotic Manipulation: A Case Study on Pushing," which has been submitted to IROS 2024.
+<a href='https://arxiv.org/pdf/2310.02044'><img src='https://img.shields.io/badge/ArXiv-2303.09535-red'></a> 
+<a href='https://cloudgripper.org/'><img src='https://img.shields.io/badge/Project-Page-Green'></a> 
 
+## Abstract
+As model and dataset sizes continue to scale in robot learning, the need to understand what is the specific
+factor in the dataset that affects model performance becomes increasingly urgent to ensure cost-effective data collection and model performance. In this work, we empirically investigate how physics attributes (color, friction coefficient, shape) and scene background characteristics, such as the complexity and dynamics of interactions with background objects, influence
+the performance of Video Transformers in predicting planar pushing trajectories. We aim to investigate three primary
+questions: How do physics attributes and background scene characteristics influence model performance? What kind of changes in attributes are most detrimental to model generalization? What proportion of fine-tuning data is required to adapt
+models to novel scenarios? To facilitate this research, we present CloudGripper-Push-1K, a large real-world vision-based robot pushing dataset comprising 1278 hours and 460,000 videos of planar pushing interactions with objects with different physics and background attributes. We also propose Video Occlusion Transformer (VOT), a generic modular video-transformerbased trajectory prediction framework which features 3 choices of 2D-spatial encoders as the subject of our case study.
 
+<img src="push1k.gif"  width="600" height="400">
 
-## Dataset Preview
+## Dataset
+[Example Dataset](https://cloudgripper.org/)
 
-We understand the importance of data for research and replication of results. Therefore, we are providing a sample of our dataset to give you a glimpse into our work and enable preliminary exploration.
+[Full 1.4T dataset](replace)
 
-Access the dataset sample here: [CloudGripper Dataset Sample](https://cloudgripper.org/)
+## Installation
+```bash
+conda env create -n env python=3.9
+conda activate env
+pip install -r requirements.txt
+```
 
+## Training on SLURM
+```bash
+sbatch example.sh
+```
 
-## Stay Updated
-
-The full dataset and the source code used in our study will be released upon paper acceptance. Please check back for updates regarding the paper's acceptance and the release of our full dataset and code. We are excited to share our work with the community and look forward to contributing to the advancement of research in this area.
-
-Thank you for your interest!
+## Pre-trained weights
+[Pre-trained weights](replace)
