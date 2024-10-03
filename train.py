@@ -9,7 +9,7 @@ from thop import profile
 import wandb
 import os
 from tqdm import tqdm
-from VOT import MaxViT, VTN  
+from VOT import MaxViT, MaxViT_v2, VTN, VTN_MaxViT_v2, SwinTransformer, VTN_Swin
 from data_loader import *
 import traceback
 import utils
@@ -20,6 +20,7 @@ os.environ["WANDB_DIR"] = "./wandb"
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--vit_architecture', type=str, default="maxvit")
 parser.add_argument('--learning_rate', type=float, default=0.0001)
 parser.add_argument('--batch_size', type=int, default=4)
 parser.add_argument('--epochs', type=int, default=2000)
@@ -35,52 +36,76 @@ config = dict(
     learning_rate=args.learning_rate,
     architecture="Transformer",
 )
+if args.vit_architecture == "maxvit":
+    vit = MaxViT(
+        num_classes = 1000,
+        dim_conv_stem = 64,
+        dim = 96,
+        dim_head = 32,
+        depth = (1, 1, 1, 1),
+        window_size = 7,
+        mbconv_expansion_rate = 4,
+        mbconv_shrinkage_rate = 0.25,
+        dropout = 0.1
+    )
+    vot = VTN(
+        vit = vit,
+        depth = 2, 
+        heads = 8,
+        dim_head = 64,
+        min_match_ratio=0.9,
+        max_distance=0.5
+    )
+elif args.vit_architecture == "maxvit_2":
+    vit = MaxViT_v2(
+        num_classes = 1000,
+        dim_conv_stem = 64,
+        dim = 96,
+        dim_head = 32,
+        depth = (1, 1, 1, 1),
+        window_size = 7,
+        mbconv_expansion_rate = 4,
+        mbconv_shrinkage_rate = 0.25,
+        dropout = 0.1
+    )
+    vot = VTN(
+        vit = vit,
+        depth = 2, 
+        heads = 8,
+        dim_head = 64,
+        min_match_ratio=0.9,
+        max_distance=0.5
+    )
+else:  
+    vit = SwinTransformer(
+        hidden_dim=96,
+        layers=(2, 2, 6, 2),
+        heads=(3, 6, 12, 24),
+        channels=3,
+        num_classes=1000,
+        head_dim=32,
+        window_size=7,
+        downscaling_factors=(4, 2, 2, 2),
+        relative_pos_embedding=True
+    )
+    vot = VTN_Swin(
+        vit = vit,
+        depth = 2, 
+        heads = 8,
+        dim_head = 64,
+        min_match_ratio=0.9,
+        max_distance=0.5
+    )
 
-vit = MaxViT(
-    num_classes = 1000,
-    dim_conv_stem = 64,
-    dim = 96,
-    dim_head = 32,
-    depth = (1, 1, 1, 1),
-    window_size = 7,
-    mbconv_expansion_rate = 4,
-    mbconv_shrinkage_rate = 0.25,
-    dropout = 0.1
-)
 
-# vit = MaxViT_v2(
-#     num_classes = 1000,
-#     dim_conv_stem = 64,
-#     dim = 96,
-#     dim_head = 32,
-#     depth = (1, 1, 1, 1),
-#     window_size = 7,
-#     mbconv_expansion_rate = 4,
-#     mbconv_shrinkage_rate = 0.25,
-#     dropout = 0.1
+# vot = VTN(
+#     vit = vit,
+#     depth = 2, 
+#     heads = 8,
+#     dim_head = 64,
+#     min_match_ratio=0.9,
+#     max_distance=0.5
 # )
-
-# vit = SwinTransformer(
-#     hidden_dim=96,
-#     layers=(2, 2, 6, 2),
-#     heads=(3, 6, 12, 24),
-#     channels=3,
-#     num_classes=1000,
-#     head_dim=32,
-#     window_size=7,
-#     downscaling_factors=(4, 2, 2, 2),
-#     relative_pos_embedding=True
-# )
-
-
-vot = VTN(
-    vit = vit,
-    depth = 2, 
-    heads = 8,
-    dim_head = 64,
-    min_match_ratio=0.9,
-    max_distance=0.5
-)
 
 def train_batch(data, model, optimizer, criterion, example_ct):
     videos, positions = data
@@ -139,7 +164,7 @@ def train(run=None):
 
     if torch.cuda.is_available():
         model = vot.to(device)
-        print("number of parameters", sum(p.numel() for p in model.parameters()))
+        # print("number of parameters", sum(p.numel() for p in model.parameters()))
         ckpt_path = None
         if dist.get_rank() == 0 and ckpt_path is not None:
             model.load_state_dict(torch.load(ckpt_path))

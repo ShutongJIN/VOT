@@ -12,8 +12,8 @@ from functools import partial
 
 from classifier_free_guidance_pytorch import TextConditioner, AttentionTextConditioner, classifier_free_guidance
 
-from VOT.transformer import MaxViT
-from VOT.transformer_2 import MaxViT_v2
+# from VOT.transformer import MaxViT
+# from VOT.MaxViT_v2 import MaxViT_v2
 from VOT.swin_transformer import SwinTransformer
 from VOT.token_learner import TokenLearner
 from VOT.transformer import *
@@ -94,7 +94,6 @@ class VTN_Swin(nn.Module):
             images,
             return_embeddings = True
         )
-        print("tokens shape: ", tokens.shape)
         tokens = unpack_one(tokens, packed_shape, '* c h w')
         learned_tokens = self.token_learner(tokens)
         learned_tokens = rearrange(learned_tokens, 'b f c n -> b (f n) c')

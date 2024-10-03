@@ -15,7 +15,6 @@ from classifier_free_guidance_pytorch import TextConditioner, AttentionTextCondi
 from VOT.transformer import MaxViT
 from VOT.token_learner import TokenLearner
 from VOT.transformer import *
-from VOT.orb_features import *
 
 import seaborn
 import matplotlib.pyplot as plt

@@ -19,8 +19,8 @@ models to novel scenarios? To facilitate this research, we present CloudGripper-
 
 ## Installation
 ```bash
-conda env create -n env python=3.9
-conda activate env
+conda create -n vot python=3.9
+conda activate vot
 pip install -r requirements.txt
 ```
 

@@ -12,10 +12,10 @@ from functools import partial
 
 from classifier_free_guidance_pytorch import TextConditioner, AttentionTextConditioner, classifier_free_guidance
 
-from VOT.MaxViT import MaxViT
+from VOT.transformer import MaxViT
 from VOT.MaxViT_v2 import MaxViT_v2
 from VOT.token_learner import TokenLearner
-from VOT.transformer import *
+from VOT.MaxViT_v2 import *
 
 import seaborn
 import matplotlib.pyplot as plt

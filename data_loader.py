@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import os
-from VOT.orb_features import extract_keyframes, wrap
 
 class TrainingDataset(Dataset):
     def __init__(self, video_data, position_data):
@@ -50,6 +49,8 @@ def tensor_loader(training_path, MAP_ENABLE = False):
                 frames.append(frame_resized)
             frame_count += 1
         cap.release()
+        video_tensor = torch.stack([torch.from_numpy(frame) for frame in frames])
+        train_videos.append(video_tensor)
 
         stacked_poses = []
         stacked_cnt = 0
@@ -64,7 +65,7 @@ def tensor_loader(training_path, MAP_ENABLE = False):
                     pos_tensor = torch.tensor(values)
                     train_object_pos_tmp.append(pos_tensor)
                 stacked_cnt += 1 
-            stacked_poses = map_generator(train_object_pos_tmp, False)
+            stacked_poses = map_generator(train_object_pos_tmp)
         train_object_pos.append(stacked_poses)
     return TrainingDataset(train_videos, train_object_pos)
 
